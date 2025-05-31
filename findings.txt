@@ -1,0 +1,89 @@
+                    
+                    
+┌──────────────────┐
+│ 14 Code Findings │
+└──────────────────┘
+                                    
+  [36m[22m[24m  vuln-main-10.java[0m
+    ❯❱ [1mjava.java-jwt.security.jwt-hardcode.java-jwt-hardcoded-secret[0m
+          A hard-coded credential was detected. It is not recommended to store credentials in source-code, as
+          this risks secrets being leaked and used by either an internal or external malicious adversary. It 
+          is recommended to use environment variables to securely provide credentials or retrieve credentials
+          from a secure vault or HSM (Hardware Security Module).                                             
+          Details: https://sg.run/RoDK                                                                       
+                                                                                                             
+           15┆ Algorithm algorithm = Algorithm.HMAC256("secret");
+            ⋮┆----------------------------------------
+           46┆ static String secret = "secret";
+                                   
+  [36m[22m[24m  vuln-main-2.java[0m
+    ❯❱ [1mjava.java-jwt.security.jwt-hardcode.java-jwt-hardcoded-secret[0m
+          A hard-coded credential was detected. It is not recommended to store credentials in source-code, as
+          this risks secrets being leaked and used by either an internal or external malicious adversary. It 
+          is recommended to use environment variables to securely provide credentials or retrieve credentials
+          from a secure vault or HSM (Hardware Security Module).                                             
+          Details: https://sg.run/RoDK                                                                       
+                                                                                                             
+           15┆ Algorithm algorithm = Algorithm.HMAC256("secret");
+            ⋮┆----------------------------------------
+           46┆ static String secret = "secret";
+                                   
+  [36m[22m[24m  vuln-main-3.java[0m
+    ❯❱ [1mjava.java-jwt.security.jwt-hardcode.java-jwt-hardcoded-secret[0m
+          A hard-coded credential was detected. It is not recommended to store credentials in source-code, as
+          this risks secrets being leaked and used by either an internal or external malicious adversary. It 
+          is recommended to use environment variables to securely provide credentials or retrieve credentials
+          from a secure vault or HSM (Hardware Security Module).                                             
+          Details: https://sg.run/RoDK                                                                       
+                                                                                                             
+           15┆ Algorithm algorithm = Algorithm.HMAC256("secret");
+            ⋮┆----------------------------------------
+           46┆ static String secret = "secret";
+                                   
+  [36m[22m[24m  vuln-main-4.java[0m
+    ❯❱ [1mjava.java-jwt.security.jwt-hardcode.java-jwt-hardcoded-secret[0m
+          A hard-coded credential was detected. It is not recommended to store credentials in source-code, as
+          this risks secrets being leaked and used by either an internal or external malicious adversary. It 
+          is recommended to use environment variables to securely provide credentials or retrieve credentials
+          from a secure vault or HSM (Hardware Security Module).                                             
+          Details: https://sg.run/RoDK                                                                       
+                                                                                                             
+           15┆ Algorithm algorithm = Algorithm.HMAC256("secret");
+            ⋮┆----------------------------------------
+           46┆ static String secret = "secret";
+                                   
+  [36m[22m[24m  vuln-main-7.java[0m
+    ❯❱ [1mjava.java-jwt.security.jwt-hardcode.java-jwt-hardcoded-secret[0m
+          A hard-coded credential was detected. It is not recommended to store credentials in source-code, as
+          this risks secrets being leaked and used by either an internal or external malicious adversary. It 
+          is recommended to use environment variables to securely provide credentials or retrieve credentials
+          from a secure vault or HSM (Hardware Security Module).                                             
+          Details: https://sg.run/RoDK                                                                       
+                                                                                                             
+           15┆ Algorithm algorithm = Algorithm.HMAC256("secret");
+            ⋮┆----------------------------------------
+           46┆ static String secret = "secret";
+                                   
+  [36m[22m[24m  vuln-main-9.java[0m
+    ❯❱ [1mjava.java-jwt.security.jwt-hardcode.java-jwt-hardcoded-secret[0m
+          A hard-coded credential was detected. It is not recommended to store credentials in source-code, as
+          this risks secrets being leaked and used by either an internal or external malicious adversary. It 
+          is recommended to use environment variables to securely provide credentials or retrieve credentials
+          from a secure vault or HSM (Hardware Security Module).                                             
+          Details: https://sg.run/RoDK                                                                       
+                                                                                                             
+           15┆ Algorithm algorithm = Algorithm.HMAC256("secret");
+            ⋮┆----------------------------------------
+           46┆ static String secret = "secret";
+                                 
+  [36m[22m[24m  vuln-main.java[0m
+    ❯❱ [1mjava.java-jwt.security.jwt-hardcode.java-jwt-hardcoded-secret[0m
+          A hard-coded credential was detected. It is not recommended to store credentials in source-code, as
+          this risks secrets being leaked and used by either an internal or external malicious adversary. It 
+          is recommended to use environment variables to securely provide credentials or retrieve credentials
+          from a secure vault or HSM (Hardware Security Module).                                             
+          Details: https://sg.run/RoDK                                                                       
+                                                                                                             
+           15┆ Algorithm algorithm = Algorithm.HMAC256("secret");
+            ⋮┆----------------------------------------
+           46┆ static String secret = "secret";

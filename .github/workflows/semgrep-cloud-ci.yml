@@ -1,0 +1,45 @@
+name: "CI: Semgrep Cloud Scan"
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  semgrep-scan:
+    name: "Run Semgrep Cloud"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Semgrep CLI
+        run: |
+          python -m pip install --upgrade pip
+          pip install semgrep
+
+      - name: Run Semgrep Cloud Scan
+        run: |
+          semgrep ci --config=p/ci --token ${{ secrets.SEMGREP_TOKEN }}
+
+      - name: Generate SARIF Report
+        if: always()
+        run: |
+          semgrep ci --config=p/ci --token ${{ secrets.SEMGREP_TOKEN }} \
+            --output semgrep-results.sarif --output-format sarif
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: semgrep-results.sarif
+          repository: ${{ github.repository }}
