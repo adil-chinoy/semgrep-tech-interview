@@ -55,9 +55,9 @@ jobs:
           checkout_path: .
 
       # 7. Upload the SARIF as an artifact (downloadable)
-      - name: Upload SARIF Artifact
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: semgrep-sarif
-          path: semgrep-results.sarif
+      # - name: Upload SARIF Artifact
+      #   if: always()
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: semgrep-sarif
+      #     path: semgrep-results.sarif
