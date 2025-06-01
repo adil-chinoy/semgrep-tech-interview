@@ -62,7 +62,7 @@ jobs:
       # 7) (Optional) Upload SARIF Artifact once SARIF is confirmed
       - name: Upload SARIF Artifact
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: semgrep-sarif
           path: semgrep-results.sarif
