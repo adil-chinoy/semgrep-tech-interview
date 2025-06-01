@@ -1,4 +1,9 @@
-name: "CI: Semgrep Cloud Scan"
+name: "CI: Semgrep Cloud Scan + SARIF Upload"
+
+# 1) Grant the Code Scanning (security‐events) permission
+permissions:
+  contents: read               # allows checkout, etc.
+  security-events: write       # required for upload‐sarif to push alerts
 
 on:
   push:
@@ -8,29 +13,24 @@ on:
 
 jobs:
   semgrep-scan:
-    name: "Run Semgrep Cloud + Generate SARIF"
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2) Set up Python 3.10
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      # 3) Install Semgrep CLI
       - name: Install Semgrep CLI
         run: |
           python -m pip install --upgrade pip
           pip install semgrep
 
-      # 4) Confirm SEMGREP_AUTH_TOKEN is present
       - name: Confirm Semgrep Auth Token
         run: |
           if [ -z "$SEMGREP_AUTH_TOKEN" ]; then
@@ -41,7 +41,6 @@ jobs:
         env:
           SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
-      # 5) Run Semgrep Cloud Scan, but do NOT fail the job if findings exist
       - name: Run Semgrep Cloud Scan
         continue-on-error: true
         run: |
@@ -49,8 +48,7 @@ jobs:
         env:
           SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
-      # 6) Generate SARIF via “semgrep scan” (CE) so we get a local file
-      - name: Generate SARIF Report (debug)
+      - name: Generate SARIF Report
         if: always()
         run: |
           echo "=== Listing BEFORE semgrep scan ==="
@@ -59,15 +57,6 @@ jobs:
           echo "=== Listing AFTER semgrep scan ==="
           ls -la
 
-      # 7) (Optional) Upload SARIF Artifact once SARIF is confirmed
-      - name: Upload SARIF Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: semgrep-sarif
-          path: semgrep-results.sarif
-
-      # 8) Set up Code Scans on GitHub
       - name: Upload SARIF to GitHub Code Scanning
         if: always()
         uses: github/codeql-action/upload-sarif@v3
