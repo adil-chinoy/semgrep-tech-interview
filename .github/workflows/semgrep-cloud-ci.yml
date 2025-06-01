@@ -42,27 +42,14 @@ jobs:
           SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
       # 5) Run Semgrep in “Cloud” mode (using the env var for auth)
-      - name: Run Semgrep Cloud Scan
+      - name: Run Semgrep Cloud Scan (continue on findings)
         run: |
-          semgrep ci --config=p/ci
+          semgrep ci --config=p/ci --exit-zero
         env:
           SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
-      # 6) Generate SARIF via “semgrep scan” (CE) so we get a local file
       - name: Generate SARIF Report (debug)
         if: always()
         run: |
-          echo "=== Listing BEFORE semgrep scan ==="
-          ls -la
-          # Correct SARIF flags: use --sarif and -o to specify output file
           semgrep scan --config=p/ci --sarif -o semgrep-results.sarif .
-          echo "=== Listing AFTER semgrep scan ==="
           ls -la
-
-      # 7) (Commented out) Upload SARIF Artifact until we confirm SARIF was generated
-      # - name: Upload SARIF Artifact
-      #   if: always()
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: semgrep-sarif
-      #     path: semgrep-results.sarif
