@@ -1,4 +1,4 @@
-name: "CI: Semgrep Cloud Scan (Fix Flags)"
+name: "CI: Semgrep Cloud Scan (Fix SARIF Flags)"
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Checkout
+      # 1) Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -30,23 +30,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install semgrep
 
-      # 4) Authenticate to Semgrep Cloud (via environment variable)
-      #    NOTE: Make sure you have set a repository secret named SEMGREP_AUTH_TOKEN
-      - name: Confirm Semgrep Auth Token Exists
+      # 4) Confirm that SEMGREP_AUTH_TOKEN is present
+      - name: Confirm Semgrep Auth Token
         run: |
           if [ -z "$SEMGREP_AUTH_TOKEN" ]; then
             echo "ERROR: SEMGREP_AUTH_TOKEN is not set"
             exit 1
           fi
           echo "Semgrep auth token is set."
+        env:
+          SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
-      # 5) Run Semgrep in “Cloud” mode (no --token flag; uses $SEMGREP_AUTH_TOKEN)
-      #    If there are violations, exit code will be non-zero (e.g. 2)
+      # 5) Run Semgrep in “Cloud” mode (using the env var for auth)
       - name: Run Semgrep Cloud Scan
         run: |
           semgrep ci --config=p/ci
         env:
-          # Inject the secret into the runner’s environment
           SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
       # 6) Generate SARIF via “semgrep scan” (CE) so we get a local file
@@ -55,12 +54,12 @@ jobs:
         run: |
           echo "=== Listing BEFORE semgrep scan ==="
           ls -la
-          # Correct flags: -o for output file, -f sarif for format
-          semgrep scan --config=p/ci -o semgrep-results.sarif -f sarif .
+          # Correct SARIF flags: use --sarif and -o to specify output file
+          semgrep scan --config=p/ci --sarif -o semgrep-results.sarif .
           echo "=== Listing AFTER semgrep scan ==="
           ls -la
 
-      # 7) (Commented out for now) Upload SARIF Artifact
+      # 7) (Commented out) Upload SARIF Artifact until we confirm SARIF was generated
       # - name: Upload SARIF Artifact
       #   if: always()
       #   uses: actions/upload-artifact@v2
