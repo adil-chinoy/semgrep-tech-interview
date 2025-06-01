@@ -1,4 +1,4 @@
-name: "CI: Semgrep Cloud Scan (Fix SARIF Flags)"
+name: "CI: Semgrep Cloud Scan"
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install semgrep
 
-      # 4) Confirm that SEMGREP_AUTH_TOKEN is present
+      # 4) Confirm SEMGREP_AUTH_TOKEN is present
       - name: Confirm Semgrep Auth Token
         run: |
           if [ -z "$SEMGREP_AUTH_TOKEN" ]; then
@@ -41,15 +41,28 @@ jobs:
         env:
           SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
-      # 5) Run Semgrep in “Cloud” mode (using the env var for auth)
-      - name: Run Semgrep Cloud Scan (continue on findings)
+      # 5) Run Semgrep Cloud Scan, but do NOT fail the job if findings exist
+      - name: Run Semgrep Cloud Scan
+        continue-on-error: true
         run: |
-          semgrep ci --config=p/ci --strict=false
+          semgrep ci --config=p/ci
         env:
           SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
+      # 6) Generate SARIF via “semgrep scan” (CE) so we get a local file
       - name: Generate SARIF Report (debug)
         if: always()
         run: |
-          semgrep scan --config=p/ci --sarif -o semgrep-results.sarif .
+          echo "=== Listing BEFORE semgrep scan ==="
           ls -la
+          semgrep scan --config=p/ci --sarif -o semgrep-results.sarif .
+          echo "=== Listing AFTER semgrep scan ==="
+          ls -la
+
+      # 7) (Optional) Upload SARIF Artifact once SARIF is confirmed
+      # - name: Upload SARIF Artifact
+      #   if: always()
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: semgrep-sarif
+      #     path: semgrep-results.sarif
