@@ -44,7 +44,7 @@ jobs:
       # 5) Run Semgrep in “Cloud” mode (using the env var for auth)
       - name: Run Semgrep Cloud Scan (continue on findings)
         run: |
-          semgrep ci --config=p/ci --exit-zero
+          semgrep ci --config=p/ci --strict=false
         env:
           SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
