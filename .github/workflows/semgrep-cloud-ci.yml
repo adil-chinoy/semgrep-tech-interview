@@ -66,3 +66,11 @@ jobs:
         with:
           name: semgrep-sarif
           path: semgrep-results.sarif
+
+      # 8) Set up Code Scans on GitHub
+      - name: Upload SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep-results.sarif
+          checkout_path: .
