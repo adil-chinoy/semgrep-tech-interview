@@ -1,4 +1,4 @@
-name: "CI: Semgrep Cloud Scan (No SARIF Upload)"
+name: "CI: Semgrep Cloud Scan (Fix Flags)"
 
 on:
   push:
@@ -8,11 +8,11 @@ on:
 
 jobs:
   semgrep-scan:
-    name: "Run Semgrep Cloud + Generate SARIF (No Upload)"
+    name: "Run Semgrep Cloud + Generate SARIF"
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Checkout your code
+      # 1) Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -30,18 +30,40 @@ jobs:
           python -m pip install --upgrade pip
           pip install semgrep
 
-      # 4) Run Semgrep in “Cloud” mode (this can exit code 2 if it finds issues)
+      # 4) Authenticate to Semgrep Cloud (via environment variable)
+      #    NOTE: Make sure you have set a repository secret named SEMGREP_AUTH_TOKEN
+      - name: Confirm Semgrep Auth Token Exists
+        run: |
+          if [ -z "$SEMGREP_AUTH_TOKEN" ]; then
+            echo "ERROR: SEMGREP_AUTH_TOKEN is not set"
+            exit 1
+          fi
+          echo "Semgrep auth token is set."
+
+      # 5) Run Semgrep in “Cloud” mode (no --token flag; uses $SEMGREP_AUTH_TOKEN)
+      #    If there are violations, exit code will be non-zero (e.g. 2)
       - name: Run Semgrep Cloud Scan
         run: |
-          semgrep ci --config=p/ci --token ${{ secrets.SEMGREP_TOKEN }}
+          semgrep ci --config=p/ci
+        env:
+          # Inject the secret into the runner’s environment
+          SEMGREP_AUTH_TOKEN: ${{ secrets.SEMGREP_AUTH_TOKEN }}
 
-      # 5) Generate SARIF via “semgrep scan” (CE) so we get a local file
+      # 6) Generate SARIF via “semgrep scan” (CE) so we get a local file
       - name: Generate SARIF Report (debug)
         if: always()
         run: |
           echo "=== Listing BEFORE semgrep scan ==="
           ls -la
-          # The trailing “.” is critical; it tells Semgrep to scan the current directory.
-          semgrep scan --config=p/ci --output semgrep-results.sarif --output-format sarif .
+          # Correct flags: -o for output file, -f sarif for format
+          semgrep scan --config=p/ci -o semgrep-results.sarif -f sarif .
           echo "=== Listing AFTER semgrep scan ==="
           ls -la
+
+      # 7) (Commented out for now) Upload SARIF Artifact
+      # - name: Upload SARIF Artifact
+      #   if: always()
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: semgrep-sarif
+      #     path: semgrep-results.sarif
